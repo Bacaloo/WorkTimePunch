@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5mm" height="5mm" viewBox="0 0 100 100" role="img" shape-rendering="geometricPrecision" aria-labelledby="title desc">
+  <title id="title">Pausenende – Zeiterfassung</title>
+  <desc id="desc">5 x 5 mm Icon: grüner Pfeil nach rechts zur Arbeit zurück, Tasse und Uhr für Pausenende.</desc>
+  <g stroke-linecap="round" stroke-linejoin="round">
+  
+  <path d="M35 44 H62 Q67 44 67 50 V65 Q67 75 56 75 H40 Q30 75 30 65 V50 Q30 44 35 44 Z" fill="#2F3742"/>
+  <path d="M67 52 H74 Q82 52 82 60 Q82 68 74 68 H67" fill="none" stroke="#2F3742" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 81 H70" fill="none" stroke="#2F3742" stroke-width="7" stroke-linecap="round"/>
+  <path d="M40 20 C35 28 47 30 41 39" fill="none" stroke="#2F3742" stroke-width="5.2" stroke-linecap="round"/>
+  <path d="M55 20 C50 28 62 30 56 39" fill="none" stroke="#2F3742" stroke-width="5.2" stroke-linecap="round"/>
+
+  <path d="M18 52 H52" fill="none" stroke="#20A953" stroke-width="12" stroke-linecap="round"/>
+  <path d="M47 36 L70 52 L47 68 Z" fill="#20A953" stroke="#20A953" stroke-linejoin="round"/>
+  
+  <circle cx="75" cy="76" r="15.5" fill="#FFFFFF" stroke="#20A953" stroke-width="6"/>
+  <path d="M75 76 V67.0 M75 76 L82.4 81.3" fill="none" stroke="#20A953" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="75" cy="76" r="2.6" fill="#20A953"/>
+
+</g>
+</svg>

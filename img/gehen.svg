@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5mm" height="5mm" viewBox="0 0 100 100" role="img" shape-rendering="geometricPrecision" aria-labelledby="title desc">
+  <title id="title">Gehen – Zeiterfassung</title>
+  <desc id="desc">5 x 5 mm Icon: roter Pfeil nach links von der Arbeit weg, Türsymbol und Uhr.</desc>
+  <g stroke-linecap="round" stroke-linejoin="round">
+  
+  <path d="M58 24 H80 V78 H58" fill="none" stroke="#2F3742" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M61 29 L76 35 V80 L61 74 Z" fill="#2F3742"/>
+  <circle cx="70.2" cy="54" r="2.2" fill="#FFFFFF"/>
+
+  
+  <path d="M74 50 H35" fill="none" stroke="#E24545" stroke-width="13.5" stroke-linecap="round"/>
+  <path d="M40 33 L16 50 L40 67 Z" fill="#E24545" stroke="#E24545" stroke-linejoin="round"/>
+
+  
+  <circle cx="78" cy="76" r="15.5" fill="#FFFFFF" stroke="#E24545" stroke-width="6"/>
+  <path d="M78 76 V67.0 M78 76 L85.4 81.3" fill="none" stroke="#E24545" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="78" cy="76" r="2.6" fill="#E24545"/>
+
+</g>
+</svg>
