@@ -3,4 +3,6 @@ __pycache__/
 .phpunit.result.cache
 node_modules/
 vendor/
-
+app-certificate-requests/
+worktimepunch.csr
+worktimepunch.key
