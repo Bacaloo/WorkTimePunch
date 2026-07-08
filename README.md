@@ -89,6 +89,26 @@ Arbeitsabschnitt ein WorkTime Zeiteintrag erzeugt.
 Die eigentliche Arbeitszeitverwaltung, Auswertung, Genehmigung und
 Weiterverarbeitung bleibt bei WorkTime.
 
+## Datenschutz
+
+WorkTimePunch verarbeitet personenbezogene Arbeitszeitdaten des angemeldeten
+Nextcloud Benutzers, soweit sie fuer die Anwesenheits- und Pausenbuchung
+erforderlich sind.
+
+Die App speichert den aktuellen WorkTimePunch Status je WorkTime Mitarbeiter in
+einer eigenen Hilfstabelle und erzeugt beim Wechsel in die Pause oder beim
+Gehen WorkTime Zeiteintraege. Dazu gehoeren insbesondere Mitarbeiterbezug,
+Anwesenheitsstatus, Beginn von Arbeitsabschnitten und Beginn von Pausen.
+
+WorkTimePunch uebertraegt diese Daten nicht an externe Dienste und stellt keine
+eigene Exportfunktion bereit. Die weitere Arbeitszeitverwaltung, Auswertung,
+Aufbewahrung und ein moeglicher Export erfolgen in der WorkTime App und nach
+den dort geltenden Einstellungen und Verantwortlichkeiten.
+
+Administratoren sollten WorkTimePunch nur fuer Benutzer aktivieren, die WorkTime
+nutzen duerfen, und die gesetzlichen sowie betrieblichen Anforderungen zur
+Arbeitszeiterfassung und zum Datenschutz beachten.
+
 ## Lizenz
 
 AGPL-3.0
