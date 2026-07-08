@@ -30,12 +30,12 @@
         },
         {
             id: 'pausenanfang',
-            label: 'Pausenanfang',
+            label: 'In Pause gehen',
             icon: 'pausenanfang.svg',
         },
         {
             id: 'pausenende',
-            label: 'Pausenende',
+            label: 'Aus der Pause kommen',
             icon: 'pausenende.svg',
         },
         {
@@ -115,6 +115,65 @@
         return data;
     };
 
+    const formatPunchTime = (date) => (
+        `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+    );
+
+    const formatStateTime = (value) => {
+        if (typeof value !== 'string' || value === '') {
+            return null;
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
+        return formatPunchTime(date);
+    };
+
+    const sameMinute = (first, second) => (
+        typeof first === 'string'
+        && typeof second === 'string'
+        && first.slice(0, 16) === second.slice(0, 16)
+    );
+
+    const lastPunchFromState = (state) => {
+        const session = state?.session;
+        if (!session) {
+            return null;
+        }
+
+        if (state.state === 'paused') {
+            return {
+                action: 'pausenanfang',
+                time: formatStateTime(session.breakStartedAt),
+            };
+        }
+
+        if (state.state !== 'working') {
+            return null;
+        }
+
+        if (
+            session.startedAt
+            && (
+                !session.segmentStartedAt
+                || sameMinute(session.startedAt, session.segmentStartedAt)
+            )
+        ) {
+            return {
+                action: 'kommen',
+                time: formatStateTime(session.startedAt),
+            };
+        }
+
+        return {
+            action: 'pausenende',
+            time: formatStateTime(session.segmentStartedAt),
+        };
+    };
+
     const stateLabel = (state) => {
         if (state === 'working') {
             return 'im Betrieb';
@@ -139,6 +198,7 @@
         root.hidden = false;
         root.title = `${state.employee?.name || 'WorkTime'}: ${stateLabel(state.state)}`;
 
+        const lastPunch = lastPunchFromState(state);
         actions.forEach((action) => {
             const button = document.createElement('button');
             button.type = 'button';
@@ -151,12 +211,26 @@
             button.disabled = !enabled;
             button.setAttribute('aria-disabled', enabled ? 'false' : 'true');
 
+            const lastPunchTime = lastPunch?.action === action.id ? lastPunch.time : null;
+            if (lastPunchTime) {
+                button.classList.add('worktimepunch-topbar-button--with-time');
+                button.setAttribute('aria-label', `${action.label}, letzter Klick ${lastPunchTime}`);
+                button.title = `${action.label}: ${lastPunchTime}`;
+            }
+
             const img = document.createElement('img');
             img.src = `${appWebRoot}/img/${action.icon}`;
             img.alt = '';
             img.setAttribute('aria-hidden', 'true');
 
             button.appendChild(img);
+            if (lastPunchTime) {
+                const time = document.createElement('span');
+                time.className = 'worktimepunch-topbar-time';
+                time.textContent = lastPunchTime;
+                time.setAttribute('aria-hidden', 'true');
+                button.appendChild(time);
+            }
             button.addEventListener('click', () => punch(action.id));
             root.appendChild(button);
         });
@@ -208,10 +282,12 @@
 
         pendingAction = action;
         try {
-            render(await fetchJson(withRequestToken(generateUrl(`/apps/worktimepunch/api/punch/${action}`)), {
+            const state = await fetchJson(withRequestToken(generateUrl(`/apps/worktimepunch/api/punch/${action}`)), {
                 method: 'POST',
                 body: '{}',
-            }));
+            });
+
+            render(state);
             announceStateChange();
         } catch (error) {
             notify(error.message);

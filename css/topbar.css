@@ -19,6 +19,14 @@
 	width: 44px;
 }
 
+.worktimepunch-topbar-button--with-time {
+	border-radius: 6px;
+	flex-direction: column;
+	gap: 0;
+	padding: 2px 4px 1px;
+	width: 58px;
+}
+
 .worktimepunch-topbar-button:hover,
 .worktimepunch-topbar-button:focus {
 	background-color: var(--color-background-hover);
@@ -39,4 +47,16 @@
 .worktimepunch-topbar-button img {
 	height: 25px;
 	width: 25px;
+}
+
+.worktimepunch-topbar-button--with-time img {
+	height: 22px;
+	width: 22px;
+}
+
+.worktimepunch-topbar-time {
+	font-size: 10px;
+	font-variant-numeric: tabular-nums;
+	line-height: 12px;
+	white-space: nowrap;
 }
