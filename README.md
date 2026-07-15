@@ -1,4 +1,18 @@
 # WorkTimePunch
+Hinweis: Zentrale Projekt- und Server-Verwaltung: `/home/mletford/code/projekt-verzeichnis/README.md`
+
+
+## Abhängigkeiten (Richtung)
+
+- `WorkTimePunch -> WorkTime + Nextcloud`
+  Die App ergänzt WorkTime-Flows direkt auf der Basis vorhandener Nextcloud-WorkTime-Strukturen.
+- `WorkTimePunch <- WorkTime-App-Betrieb`
+  Ohne aktivierte WorkTime-App sind erweiterte Workflows nicht nutzbar.
+- `WorkTimePunch <-> ?`
+  Keine belegte Gegenseitigkeit dokumentiert.
+
+Prüfschritt beim Projektstart:
+- Abhängigkeitsrichtung vor Ausführung gegen `[projekt-verzeichnis/README.md](/home/mletford/code/projekt-verzeichnis/README.md)` validieren.
 
 Nextcloud Begleit-App fuer schnelle Anwesenheits- und Pausenbuchungen in
 Verbindung mit der Nextcloud App WorkTime.
@@ -88,6 +102,26 @@ Arbeitsabschnitt ein WorkTime Zeiteintrag erzeugt.
 
 Die eigentliche Arbeitszeitverwaltung, Auswertung, Genehmigung und
 Weiterverarbeitung bleibt bei WorkTime.
+
+## Datenschutz
+
+WorkTimePunch verarbeitet personenbezogene Arbeitszeitdaten des angemeldeten
+Nextcloud Benutzers, soweit sie fuer die Anwesenheits- und Pausenbuchung
+erforderlich sind.
+
+Die App speichert den aktuellen WorkTimePunch Status je WorkTime Mitarbeiter in
+einer eigenen Hilfstabelle und erzeugt beim Wechsel in die Pause oder beim
+Gehen WorkTime Zeiteintraege. Dazu gehoeren insbesondere Mitarbeiterbezug,
+Anwesenheitsstatus, Beginn von Arbeitsabschnitten und Beginn von Pausen.
+
+WorkTimePunch uebertraegt diese Daten nicht an externe Dienste und stellt keine
+eigene Exportfunktion bereit. Die weitere Arbeitszeitverwaltung, Auswertung,
+Aufbewahrung und ein moeglicher Export erfolgen in der WorkTime App und nach
+den dort geltenden Einstellungen und Verantwortlichkeiten.
+
+Administratoren sollten WorkTimePunch nur fuer Benutzer aktivieren, die WorkTime
+nutzen duerfen, und die gesetzlichen sowie betrieblichen Anforderungen zur
+Arbeitszeiterfassung und zum Datenschutz beachten.
 
 ## Lizenz
 
