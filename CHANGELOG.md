@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.4
+
+* Übernimmt das Logo aus WorkTimePunchAndroid als Store- und App-Symbol.
+
 ## 1.1.3
 
 * Verwendet den vom Nextcloud App Store erwarteten SPDX-Lizenzbezeichner.
