@@ -1,4 +1,18 @@
 # WorkTimePunch
+Hinweis: Zentrale Projekt- und Server-Verwaltung: `/home/mletford/code/projekt-verzeichnis/README.md`
+
+
+## Abhängigkeiten (Richtung)
+
+- `WorkTimePunch -> WorkTime + Nextcloud`
+  Die App ergänzt WorkTime-Flows direkt auf der Basis vorhandener Nextcloud-WorkTime-Strukturen.
+- `WorkTimePunch <- WorkTime-App-Betrieb`
+  Ohne aktivierte WorkTime-App sind erweiterte Workflows nicht nutzbar.
+- `WorkTimePunch <-> ?`
+  Keine belegte Gegenseitigkeit dokumentiert.
+
+Prüfschritt beim Projektstart:
+- Abhängigkeitsrichtung vor Ausführung gegen `[projekt-verzeichnis/README.md](/home/mletford/code/projekt-verzeichnis/README.md)` validieren.
 
 Nextcloud Begleit-App fuer schnelle Anwesenheits- und Pausenbuchungen in
 Verbindung mit der Nextcloud App WorkTime.
