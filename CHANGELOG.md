@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.3
+
+* Verwendet den vom Nextcloud App Store erwarteten SPDX-Lizenzbezeichner.
+* Ordnet die Abhängigkeiten in `info.xml` entsprechend dem aktuellen Store-Schema.
+* Bereitet das erste signierte App-Store-Paket vor.
+
 ## 1.1.2
 
 * Zeigt die Uhrzeit der letzten passenden Buchung direkt in der Nextcloud

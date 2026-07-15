@@ -6,3 +6,4 @@ vendor/
 app-certificate-requests/
 worktimepunch.csr
 worktimepunch.key
+worktimepunch.crt

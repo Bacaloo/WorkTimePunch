@@ -5,7 +5,7 @@ Diese Notiz haelt den lokalen Ablauf fuer den Nextcloud
 nicht in dieses Repository oder in den Certificate-Request-Fork committed
 werden.
 
-## Stand vom 2026-07-08
+## Stand vom 2026-07-15
 
 App-ID: `worktimepunch`
 
@@ -98,8 +98,10 @@ git commit -m "Add certificate request for worktimepunch"
 git push -u origin add-worktimepunch-csr
 ```
 
-Ein Pull Request gegen `nextcloud/app-certificate-requests:master` war zum
-Zeitpunkt dieser Notiz noch nicht angelegt.
+Das Zertifikat wurde im offiziellen Nextcloud-Repository mit Commit
+`0a4904f47d80dd4686b60029b9a0f8515521f2a8` ausgestellt. Es ist bis zum
+18.10.2036 gültig. Der öffentliche Schlüssel des Zertifikats stimmt mit dem
+lokalen privaten Schlüssel überein.
 
 ## Nach Zertifikatserteilung
 
