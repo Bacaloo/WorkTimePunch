@@ -35,8 +35,7 @@ class PunchService {
 			return $this->unavailableState('Nicht angemeldet.');
 		}
 
-		$this->loadWorkTime();
-		$this->cleanupObsoleteSessions();
+		$this->synchronizeSessions();
 		$timezone = $this->timezoneForUser($userId);
 		$employee = $this->findActiveEmployee($userId, $timezone);
 		if ($employee === null) {
@@ -59,8 +58,7 @@ class PunchService {
 			throw new PunchException('Nicht angemeldet.');
 		}
 
-		$this->loadWorkTime();
-		$this->cleanupObsoleteSessions();
+		$synchronizedEmployeeIds = $this->synchronizeSessions();
 		$timezone = $this->timezoneForUser($userId);
 		$employee = $this->findActiveEmployee($userId, $timezone);
 		if ($employee === null) {
@@ -69,6 +67,9 @@ class PunchService {
 
 		$employeeId = (int)$employee['id'];
 		$session = $this->findSession($employeeId);
+		if ($session === null && $action !== 'kommen' && in_array($employeeId, $synchronizedEmployeeIds, true)) {
+			return $this->buildState($employee, null, $timezone);
+		}
 		$state = $session['state'] ?? self::STATE_OUTSIDE;
 		$now = $this->now($timezone);
 
@@ -205,6 +206,7 @@ class PunchService {
 				'break_started_at' => $qb->createNamedParameter(null),
 				'created_at' => $qb->createNamedParameter($this->toDbDateTime($now)),
 				'updated_at' => $qb->createNamedParameter($this->toDbDateTime($now)),
+				'worktime_audit_id' => $qb->createNamedParameter($this->currentWorkTimeAuditId(), IQueryBuilder::PARAM_INT),
 			])
 			->executeStatement();
 	}
@@ -292,16 +294,29 @@ class PunchService {
 			->set('segment_started_at', $qb->createNamedParameter($segmentStartedAt === null ? null : $this->toDbDateTime($segmentStartedAt)))
 			->set('break_started_at', $qb->createNamedParameter($breakStartedAt === null ? null : $this->toDbDateTime($breakStartedAt)))
 			->set('updated_at', $qb->createNamedParameter($this->toDbDateTime($now)))
+			->set('worktime_audit_id', $qb->createNamedParameter($this->currentWorkTimeAuditId(), IQueryBuilder::PARAM_INT))
 			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
 			->executeStatement();
 	}
 
-	private function cleanupObsoleteSessions(): void {
+	/**
+	 * Reconciles the helper table with later changes made in WorkTime.
+	 *
+	 * WorkTimePunch writes a completed WorkTime entry before changing its own
+	 * session. A later WorkTime create, update or delete for the same employee
+	 * and day therefore means that WorkTime has become authoritative and the
+	 * open helper session must be discarded.
+	 *
+	 * @return int[] Employee ids whose stale helper session was removed.
+	 */
+	public function synchronizeSessions(): array {
+		$this->loadWorkTime();
 		$today = $this->now(new DateTimeZone('Europe/Berlin'))->format('Y-m-d');
 		$deleteIds = [];
+		$synchronizedEmployeeIds = [];
 
 		$qb = $this->db->getQueryBuilder();
-		$qb->select('id', 'employee_id', 'user_id', 'state')
+		$qb->select('*')
 			->from('wt_break');
 
 		$result = $qb->executeQuery();
@@ -313,11 +328,13 @@ class PunchService {
 			$state = (string)$row['state'];
 			$employeeId = (int)$row['employee_id'];
 			$userId = (string)$row['user_id'];
-			if (
+			$obsolete = (
 				!in_array($state, [self::STATE_WORKING, self::STATE_PAUSED], true)
 				|| !$this->activeEmployeeRowStillMatches($employeeId, $userId, $today)
-			) {
+			);
+			if ($obsolete || $this->hasLaterWorkTimeChange($row)) {
 				$deleteIds[] = (int)$row['id'];
+				$synchronizedEmployeeIds[] = $employeeId;
 			}
 		}
 		$result->closeCursor();
@@ -325,6 +342,113 @@ class PunchService {
 		foreach ($deleteIds as $id) {
 			$this->deleteSession($id);
 		}
+
+		return array_values(array_unique($synchronizedEmployeeIds));
+	}
+
+	/**
+	 * @param array<string, mixed> $session
+	 */
+	private function hasLaterWorkTimeChange(array $session): bool {
+		$watermark = isset($session['worktime_audit_id']) ? (int)$session['worktime_audit_id'] : 0;
+		$qb = $this->db->getQueryBuilder();
+		$qb->select('id', 'action', 'old_values', 'new_values')
+			->from('wt_audit_logs')
+			->where($qb->expr()->eq('entity_type', $qb->createNamedParameter('time_entry')))
+			->orderBy('id', 'ASC');
+
+		if ($watermark > 0) {
+			$qb->andWhere($qb->expr()->gt('id', $qb->createNamedParameter($watermark, IQueryBuilder::PARAM_INT)));
+		} else {
+			$timezone = $this->timezoneForUser((string)$session['user_id']);
+			$sessionUpdatedAtUtc = $this->fromDbDateTime((string)$session['updated_at'], $timezone)
+				->setTimezone(new DateTimeZone('UTC'));
+			$qb->andWhere($qb->expr()->gt(
+				'created_at',
+				$qb->createNamedParameter($this->toDbDateTime($sessionUpdatedAtUtc)),
+			));
+		}
+
+		$result = $qb->executeQuery();
+		$lastProcessedAuditId = $watermark;
+		$hasLaterChange = false;
+		while ($audit = $result->fetch()) {
+			if (!is_array($audit)) {
+				continue;
+			}
+
+			$lastProcessedAuditId = max($lastProcessedAuditId, (int)$audit['id']);
+			if (!in_array((string)$audit['action'], ['create', 'update', 'delete'], true)) {
+				continue;
+			}
+
+			if ($this->auditMatchesSession($audit, $session)) {
+				$hasLaterChange = true;
+				break;
+			}
+		}
+		$result->closeCursor();
+
+		if ($hasLaterChange) {
+			$this->logger->info('WorkTimePunch removed a stale session after a later WorkTime change.', [
+				'app' => Application::APP_ID,
+				'employeeId' => (int)$session['employee_id'],
+				'workDate' => $this->dateOnly((string)$session['work_date']),
+				'auditId' => $lastProcessedAuditId,
+			]);
+			return true;
+		}
+
+		if ($lastProcessedAuditId > $watermark) {
+			$this->updateAuditWatermark((int)$session['id'], $lastProcessedAuditId);
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param array<string, mixed> $audit
+	 * @param array<string, mixed> $session
+	 */
+	private function auditMatchesSession(array $audit, array $session): bool {
+		foreach (['old_values', 'new_values'] as $column) {
+			if (!is_string($audit[$column]) || $audit[$column] === '') {
+				continue;
+			}
+
+			$values = json_decode($audit[$column], true);
+			if (!is_array($values)) {
+				continue;
+			}
+
+			if (
+				(int)($values['employeeId'] ?? 0) === (int)$session['employee_id']
+				&& $this->dateOnly((string)($values['date'] ?? '')) === $this->dateOnly((string)$session['work_date'])
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function updateAuditWatermark(int $sessionId, int $auditId): void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->update('wt_break')
+			->set('worktime_audit_id', $qb->createNamedParameter($auditId, IQueryBuilder::PARAM_INT))
+			->where($qb->expr()->eq('id', $qb->createNamedParameter($sessionId, IQueryBuilder::PARAM_INT)))
+			->executeStatement();
+	}
+
+	private function currentWorkTimeAuditId(): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->select($qb->func()->max('id'))
+			->from('wt_audit_logs');
+		$result = $qb->executeQuery();
+		$maxId = (int)$result->fetchOne();
+		$result->closeCursor();
+
+		return $maxId;
 	}
 
 	private function activeEmployeeRowStillMatches(int $employeeId, string $userId, string $today): bool {
