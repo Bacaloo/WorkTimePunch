@@ -44,6 +44,7 @@ Pausenzustaende.
 * Automatische Erstellung von WorkTime Zeiteintraegen fuer Arbeitsabschnitte
 * Pausenstatus ohne manuelle Navigation in die WorkTime App
 * Browser-Tab-uebergreifende Aktualisierung des Status
+* Regelmaessiger Abgleich mit spaeteren Aenderungen in WorkTime
 * Schutz gegen parallele oder ungueltige Buchungsaktionen
 * Automatische Deaktivierung von WorkTimePunch, wenn WorkTime nicht aktiv ist
 
@@ -102,6 +103,10 @@ Arbeitsabschnitt ein WorkTime Zeiteintrag erzeugt.
 
 Die eigentliche Arbeitszeitverwaltung, Auswertung, Genehmigung und
 Weiterverarbeitung bleibt bei WorkTime.
+
+Werden Zeiteintraege fuer eine noch offene WorkTimePunch-Sitzung spaeter in
+WorkTime angelegt, geaendert oder geloescht, gilt WorkTime als fuehrendes
+System. WorkTimePunch entfernt dann den veralteten Hilfszustand automatisch.
 
 ## Datenschutz
 

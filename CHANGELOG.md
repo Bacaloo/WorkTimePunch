@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.5
+
+* Gleicht offene WorkTimePunch-Sitzungen regelmäßig mit späteren Änderungen
+  an den zugehörigen WorkTime-Zeiteinträgen ab.
+* Berücksichtigt dabei auch neu angelegte und gelöschte WorkTime-Einträge.
+* Verhindert einen 409-Konflikt, wenn eine gerade ausgelöste Punch-Aktion mit
+  der automatischen Zustandskorrektur zusammenfällt.
+* Aktualisiert den Status in der Nextcloud-Kopfleiste alle 30 Sekunden.
+
 ## 1.1.4
 
 * Übernimmt das Logo aus WorkTimePunchAndroid als Store- und App-Symbol.

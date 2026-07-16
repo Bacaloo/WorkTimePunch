@@ -3,10 +3,12 @@
     const ROOT_ID = 'worktimepunch-topbar';
     const STATE_CHANGED_KEY = `${APP_ID}:state-changed`;
     const MAX_ATTEMPTS = 40;
+    const REFRESH_INTERVAL_MS = 30000;
     let attempts = 0;
     let root = null;
     let pendingAction = null;
     let stateChannel = null;
+    let refreshTimer = null;
 
     if (window.BroadcastChannel) {
         stateChannel = new window.BroadcastChannel(`${APP_ID}:state`);
@@ -327,6 +329,9 @@
         root = createRoot();
         anchor.parentElement.insertBefore(root, anchor.nextSibling);
         refresh();
+        if (refreshTimer === null) {
+            refreshTimer = window.setInterval(refreshWhenVisible, REFRESH_INTERVAL_MS);
+        }
     };
 
     if (stateChannel) {
