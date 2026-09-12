@@ -49,7 +49,8 @@ class PunchService {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function punch(?string $userId, string $action): array {
+	public function punch(?string $userId, string $action, string $client = ClientSource::UNKNOWN): array {
+		$client = ClientSource::normalize($client);
 		if (!in_array($action, ['kommen', 'pausenanfang', 'pausenende', 'gehen'], true)) {
 			throw new PunchException('Unbekannte WorkTimePunch-Aktion.');
 		}
@@ -74,10 +75,10 @@ class PunchService {
 		$now = $this->now($timezone);
 
 		match ($action) {
-			'kommen' => $this->kommen($employee, $session, $state, $now),
-			'pausenanfang' => $this->pausenanfang($employee, $session, $state, $now, $userId),
-			'pausenende' => $this->pausenende($employee, $session, $state, $now),
-			'gehen' => $this->gehen($employee, $session, $state, $now, $userId),
+			'kommen' => $this->kommen($employee, $session, $state, $now, $client),
+			'pausenanfang' => $this->pausenanfang($employee, $session, $state, $now, $userId, $client),
+			'pausenende' => $this->pausenende($employee, $session, $state, $now, $client),
+			'gehen' => $this->gehen($employee, $session, $state, $now, $userId, $client),
 		};
 
 		return $this->stateForUser($userId);
@@ -189,7 +190,7 @@ class PunchService {
 	 * @param array<string, mixed> $employee
 	 * @param array<string, mixed>|null $session
 	 */
-	private function kommen(array $employee, ?array $session, string $state, DateTimeImmutable $now): void {
+	private function kommen(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $client): void {
 		if ($session !== null || $state !== self::STATE_OUTSIDE) {
 			throw new PunchException('Kommen ist nur moeglich, wenn kein aktiver WorkTimePunch-Zustand besteht.');
 		}
@@ -201,6 +202,7 @@ class PunchService {
 				'user_id' => $qb->createNamedParameter((string)$employee['user_id']),
 				'work_date' => $qb->createNamedParameter($now->format('Y-m-d')),
 				'state' => $qb->createNamedParameter(self::STATE_WORKING),
+				'segment_client' => $qb->createNamedParameter($client),
 				'started_at' => $qb->createNamedParameter($this->toDbDateTime($now)),
 				'segment_started_at' => $qb->createNamedParameter($this->toDbDateTime($now)),
 				'break_started_at' => $qb->createNamedParameter(null),
@@ -215,12 +217,12 @@ class PunchService {
 	 * @param array<string, mixed> $employee
 	 * @param array<string, mixed>|null $session
 	 */
-	private function pausenanfang(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $currentUserId): void {
+	private function pausenanfang(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $currentUserId, string $client): void {
 		if ($session === null || $state !== self::STATE_WORKING) {
 			throw new PunchException('Pausenanfang ist nur moeglich, wenn der Mitarbeiter im Betrieb ist.');
 		}
 
-		$this->createTimeEntryForSegment($employee, $session, $now, $currentUserId);
+		$this->createTimeEntryForSegment($employee, $session, $now, $currentUserId, $client);
 		$this->updateSession((int)$session['id'], self::STATE_PAUSED, null, $now, $now);
 	}
 
@@ -228,24 +230,24 @@ class PunchService {
 	 * @param array<string, mixed> $employee
 	 * @param array<string, mixed>|null $session
 	 */
-	private function pausenende(array $employee, ?array $session, string $state, DateTimeImmutable $now): void {
+	private function pausenende(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $client): void {
 		if ($session === null || $state !== self::STATE_PAUSED) {
 			throw new PunchException('Pausenende ist nur moeglich, wenn gerade eine Pause laeuft.');
 		}
 
-		$this->updateSession((int)$session['id'], self::STATE_WORKING, $now, null, $now);
+		$this->updateSession((int)$session['id'], self::STATE_WORKING, $now, null, $now, $client);
 	}
 
 	/**
 	 * @param array<string, mixed> $employee
 	 * @param array<string, mixed>|null $session
 	 */
-	private function gehen(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $currentUserId): void {
+	private function gehen(array $employee, ?array $session, string $state, DateTimeImmutable $now, string $currentUserId, string $client): void {
 		if ($session === null || $state !== self::STATE_WORKING) {
 			throw new PunchException('Gehen ist nur moeglich, wenn der Mitarbeiter im Betrieb ist.');
 		}
 
-		$this->createTimeEntryForSegment($employee, $session, $now, $currentUserId);
+		$this->createTimeEntryForSegment($employee, $session, $now, $currentUserId, $client);
 		$this->deleteSession((int)$session['id']);
 	}
 
@@ -253,7 +255,7 @@ class PunchService {
 	 * @param array<string, mixed> $employee
 	 * @param array<string, mixed> $session
 	 */
-	private function createTimeEntryForSegment(array $employee, array $session, DateTimeImmutable $end, string $currentUserId): void {
+	private function createTimeEntryForSegment(array $employee, array $session, DateTimeImmutable $end, string $currentUserId, string $client): void {
 		if ($session['segment_started_at'] === null) {
 			throw new PunchException('Es gibt keinen offenen Arbeitsabschnitt.');
 		}
@@ -274,7 +276,7 @@ class PunchService {
 				$end->format('H:i'),
 				0,
 				null,
-				'WorkTimePunch',
+				ClientSource::description($session['segment_client'] ?? null, $client),
 				$currentUserId,
 			);
 		} catch (Throwable $e) {
@@ -287,15 +289,18 @@ class PunchService {
 		}
 	}
 
-	private function updateSession(int $id, string $state, ?DateTimeImmutable $segmentStartedAt, ?DateTimeImmutable $breakStartedAt, DateTimeImmutable $now): void {
+	private function updateSession(int $id, string $state, ?DateTimeImmutable $segmentStartedAt, ?DateTimeImmutable $breakStartedAt, DateTimeImmutable $now, ?string $client = null): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update('wt_break')
 			->set('state', $qb->createNamedParameter($state))
 			->set('segment_started_at', $qb->createNamedParameter($segmentStartedAt === null ? null : $this->toDbDateTime($segmentStartedAt)))
 			->set('break_started_at', $qb->createNamedParameter($breakStartedAt === null ? null : $this->toDbDateTime($breakStartedAt)))
 			->set('updated_at', $qb->createNamedParameter($this->toDbDateTime($now)))
-			->set('worktime_audit_id', $qb->createNamedParameter($this->currentWorkTimeAuditId(), IQueryBuilder::PARAM_INT))
-			->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
+			->set('worktime_audit_id', $qb->createNamedParameter($this->currentWorkTimeAuditId(), IQueryBuilder::PARAM_INT));
+		if ($client !== null) {
+			$qb->set('segment_client', $qb->createNamedParameter($client));
+		}
+		$qb->where($qb->expr()->eq('id', $qb->createNamedParameter($id, IQueryBuilder::PARAM_INT)))
 			->executeStatement();
 	}
 

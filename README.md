@@ -101,6 +101,22 @@ WorkTimePunch speichert den aktuellen Anwesenheitszustand in einer eigenen
 Hilfstabelle. Beim Wechsel in die Pause oder beim Gehen wird aus dem offenen
 Arbeitsabschnitt ein WorkTime Zeiteintrag erzeugt.
 
+Ab 1.1.6 wird die Herkunft serverseitig anhand der vorhandenen HTTP-Anfragen
+ermittelt: `Nextcloud`, `WEB-GUI` oder `mobile APP`. Die aktuelle Android-App
+wird an ihrem Dalvik-User-Agent mit OCS-Anfrage erkannt; ein Android-Browser
+bleibt ein Nextcloud-Zugang. Bestehende Clients benötigen kein Update.
+
+Der Client beim Beginn eines Arbeitsabschnitts wird in `wt_break.segment_client`
+zwischengespeichert. Bei Pausenanfang oder Gehen steht die Herkunft in der
+Beschreibung des WorkTime-Eintrags, beispielsweise `WorkTimePunch | Client:
+WEB-GUI`. Bei einem Wechsel werden Beginn und Abschluss getrennt angegeben.
+Pausenende beginnt einen neuen Abschnitt mit dessen tatsächlichem Client.
+Vor der Erweiterung begonnene Abschnitte und nicht erkennbare Anfragen werden
+als `nicht ermittelbar` bezeichnet. Historische Einträge werden nicht umgeschrieben.
+Es werden keine IP-Adressen, Gerätekennungen oder vollständigen User-Agents
+zusätzlich gespeichert. Die Herkunft ist eine technische Zuordnung anhand der
+Anfrage, kein manipulationssicherer Gerätenachweis und keine Berechtigungsprüfung.
+
 Die eigentliche Arbeitszeitverwaltung, Auswertung, Genehmigung und
 Weiterverarbeitung bleibt bei WorkTime.
 
