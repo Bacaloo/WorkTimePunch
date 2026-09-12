@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.6
+
+* Erkennt Nextcloud, WEB-GUI und bestehende Android-App serverseitig.
+* Speichert den Client des Arbeitsabschnittsbeginns in der Hilfstabelle.
+* Vermerkt die Herkunft im fertigen WorkTime-Eintrag; Clientwechsel werden getrennt ausgewiesen.
+* Bereits offene Sitzungen und nicht erkennbare Zugänge erhalten keine erfundene Herkunft.
+
 ## 1.1.5
 
 * Gleicht offene WorkTimePunch-Sitzungen regelmäßig mit späteren Änderungen

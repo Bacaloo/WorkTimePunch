@@ -6,6 +6,7 @@ namespace OCA\WorkTimePunch\Controller;
 
 use OCA\WorkTimePunch\AppInfo\Application;
 use OCA\WorkTimePunch\Service\PunchException;
+use OCA\WorkTimePunch\Service\ClientSource;
 use OCA\WorkTimePunch\Service\PunchService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -33,7 +34,7 @@ class PunchController extends Controller {
 	#[NoAdminRequired]
 	public function punch(string $punchAction): JSONResponse {
 		try {
-			return new JSONResponse($this->punchService->punch($this->userId, $punchAction));
+			return new JSONResponse($this->punchService->punch($this->userId, $punchAction, ClientSource::fromRequest($this->request)));
 		} catch (PunchException $e) {
 			return new JSONResponse([
 				'error' => $e->getMessage(),
