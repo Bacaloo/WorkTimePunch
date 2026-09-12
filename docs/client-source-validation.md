@@ -45,3 +45,9 @@ waren zuvor erfolgreich.
 Der Entwicklungsbranch `feature/client-source-1.1.6` wurde gepusht. Eine
 GitHub-CI-/Verified-Abfrage war wegen fehlender gh-Anmeldung nicht möglich.
 Es wurden kein Release-Tag und keine Store-Veröffentlichung erzeugt.
+
+## Veröffentlichungsfreigabe am 12.09.2026
+
+Nach eigener Prüfung auf HVML hat der Benutzer Version 1.1.6 ausdrücklich
+zur Veröffentlichung freigegeben. Die zuvor dokumentierte Store-Sperre ist
+damit aufgehoben. Der signierte Release folgt dem GitHub-Prüfablauf.

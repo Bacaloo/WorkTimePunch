@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.6 – HVML-Erprobung, noch keine Store-Freigabe
+## 1.1.6
 
 * Erkennt Nextcloud, WEB-GUI und bestehende Android-App serverseitig.
 * Speichert den Client des Arbeitsabschnittsbeginns in der Hilfstabelle.
