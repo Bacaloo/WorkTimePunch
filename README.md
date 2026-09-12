@@ -1,6 +1,4 @@
 # WorkTimePunch
-Hinweis: Zentrale Projekt- und Server-Verwaltung: `/home/mletford/code/projekt-verzeichnis/README.md`
-
 
 ## Abhängigkeiten (Richtung)
 
