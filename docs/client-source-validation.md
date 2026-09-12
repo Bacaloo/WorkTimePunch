@@ -32,3 +32,16 @@ mit den tatsächlichen drei Clients ist damit nicht ersetzt.
 
 Version 1.1.6 ist zur HVML-Erprobung bestimmt. Eine Veröffentlichung im
 Nextcloud-App-Store erfordert weiterhin die ausdrückliche manuelle Freigabe.
+
+## Grenzen der Abschlussprüfung
+
+Die zusätzliche eigenständige PHP-Laufzeitprüfung lieferte zunächst keine
+Erfolgsausgabe. Ihre überarbeitete Fassung konnte wegen wiederholter
+SSH-Verbindungsabbrüche nicht mehr ausgeführt werden. Eine ausdrückliche
+SQL-Abfrage der neuen Spalte und die zusätzliche gezielte Logauswertung sind
+somit noch nicht als erfolgreich belegt. Die oben genannten occ-Prüfungen
+waren zuvor erfolgreich.
+
+Der Entwicklungsbranch `feature/client-source-1.1.6` wurde gepusht. Eine
+GitHub-CI-/Verified-Abfrage war wegen fehlender gh-Anmeldung nicht möglich.
+Es wurden kein Release-Tag und keine Store-Veröffentlichung erzeugt.
