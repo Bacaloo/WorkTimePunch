@@ -84,3 +84,34 @@
 		width: 20px;
 	}
 }
+
+@media (max-width: 400px) {
+	#worktimepunch-topbar:not([hidden]) {
+		display: inline-grid;
+		grid-template-columns: repeat(2, 32px);
+		grid-template-rows: repeat(2, 22px);
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button {
+		height: 22px;
+		min-height: 22px;
+		min-width: 32px;
+		padding: 0;
+		width: 32px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button img {
+		height: 18px;
+		width: 18px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button--with-time img {
+		height: 12px;
+		width: 12px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-time {
+		font-size: 7px;
+		line-height: 8px;
+	}
+}

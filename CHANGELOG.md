@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.9
+
+* Ordnet die vier Stempeltasten auf sehr schmalen Bildschirmen kompakt in zwei Reihen an, damit das Nextcloud-App-Menü frei bleibt.
+
 ## 1.1.8
 
 * Schirmt die Stempeluhr gegen allgemeine Nextcloud-Schaltflächenstile ab; Abstände und kompakte Breiten bleiben auch auf kleinen Bildschirmen erhalten.
