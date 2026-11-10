@@ -47,11 +47,9 @@
         },
     ];
 
-    const findAnchor = () => (
-        document.getElementById('appmenu')
-        || document.querySelector('#header .header-start')
-        || document.querySelector('#header .header-left')
-        || document.getElementById('header')
+    const findHeaderActions = () => (
+        document.querySelector('#header .header-end')
+        || document.querySelector('#header .header-right')
     );
 
     const requestToken = () => (
@@ -317,8 +315,8 @@
             return;
         }
 
-        const anchor = findAnchor();
-        if (!anchor || !anchor.parentElement) {
+        const headerActions = findHeaderActions();
+        if (!headerActions) {
             attempts += 1;
             if (attempts < MAX_ATTEMPTS) {
                 window.setTimeout(mount, 250);
@@ -327,7 +325,7 @@
         }
 
         root = createRoot();
-        anchor.parentElement.insertBefore(root, anchor.nextSibling);
+        headerActions.prepend(root);
         refresh();
         if (refreshTimer === null) {
             refreshTimer = window.setInterval(refreshWhenVisible, REFRESH_INTERVAL_MS);
