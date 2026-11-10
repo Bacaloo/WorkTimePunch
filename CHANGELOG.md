@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.8
+
+* Schirmt die Stempeluhr gegen allgemeine Nextcloud-Schaltflächenstile ab; Abstände und kompakte Breiten bleiben auch auf kleinen Bildschirmen erhalten.
+
 ## 1.1.7
 
 * Platziert die Stempeluhr rechts in der Nextcloud-Kopfleiste vor den Benachrichtigungen und dem Benutzermenü.
