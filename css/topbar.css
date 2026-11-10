@@ -1,11 +1,16 @@
 #worktimepunch-topbar {
 	align-items: center;
 	display: inline-flex;
+	flex-shrink: 0;
 	height: 44px;
 	margin: 0 4px;
 }
 
-.worktimepunch-topbar-button {
+#worktimepunch-topbar[hidden] {
+	display: none;
+}
+
+#worktimepunch-topbar .worktimepunch-topbar-button {
 	align-items: center;
 	background-color: transparent;
 	border: 0;
@@ -13,13 +18,15 @@
 	cursor: pointer;
 	display: inline-flex;
 	height: 44px;
+	margin: 0;
+	min-width: 44px;
 	justify-content: center;
 	opacity: .86;
 	padding: 0;
 	width: 44px;
 }
 
-.worktimepunch-topbar-button--with-time {
+#worktimepunch-topbar .worktimepunch-topbar-button--with-time {
 	border-radius: 6px;
 	flex-direction: column;
 	gap: 0;
@@ -27,36 +34,84 @@
 	width: 58px;
 }
 
-.worktimepunch-topbar-button:hover,
-.worktimepunch-topbar-button:focus {
+#worktimepunch-topbar .worktimepunch-topbar-button:hover,
+#worktimepunch-topbar .worktimepunch-topbar-button:focus {
 	background-color: var(--color-background-hover);
 	opacity: 1;
 	outline: none;
 }
 
-.worktimepunch-topbar-button:disabled {
+#worktimepunch-topbar .worktimepunch-topbar-button:disabled {
 	cursor: default;
 	opacity: .28;
 }
 
-.worktimepunch-topbar-button:disabled:hover,
-.worktimepunch-topbar-button:disabled:focus {
+#worktimepunch-topbar .worktimepunch-topbar-button:disabled:hover,
+#worktimepunch-topbar .worktimepunch-topbar-button:disabled:focus {
 	background-color: transparent;
 }
 
-.worktimepunch-topbar-button img {
+#worktimepunch-topbar .worktimepunch-topbar-button img {
 	height: 25px;
 	width: 25px;
 }
 
-.worktimepunch-topbar-button--with-time img {
+#worktimepunch-topbar .worktimepunch-topbar-button--with-time img {
 	height: 22px;
 	width: 22px;
 }
 
-.worktimepunch-topbar-time {
+#worktimepunch-topbar .worktimepunch-topbar-time {
 	font-size: 10px;
 	font-variant-numeric: tabular-nums;
 	line-height: 12px;
 	white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+	#worktimepunch-topbar .worktimepunch-topbar-button {
+		min-width: 28px;
+		width: 28px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button--with-time {
+		min-width: 40px;
+		width: 40px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button img {
+		height: 20px;
+		width: 20px;
+	}
+}
+
+@media (max-width: 400px) {
+	#worktimepunch-topbar:not([hidden]) {
+		display: inline-grid;
+		grid-template-columns: repeat(2, 32px);
+		grid-template-rows: repeat(2, 22px);
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button {
+		height: 22px;
+		min-height: 22px;
+		min-width: 32px;
+		padding: 0;
+		width: 32px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button img {
+		height: 18px;
+		width: 18px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-button--with-time img {
+		height: 12px;
+		width: 12px;
+	}
+
+	#worktimepunch-topbar .worktimepunch-topbar-time {
+		font-size: 7px;
+		line-height: 8px;
+	}
 }

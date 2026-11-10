@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.1.9
+
+* Ordnet die vier Stempeltasten auf sehr schmalen Bildschirmen kompakt in zwei Reihen an, damit das Nextcloud-App-Menü frei bleibt.
+
+## 1.1.8
+
+* Schirmt die Stempeluhr gegen allgemeine Nextcloud-Schaltflächenstile ab; Abstände und kompakte Breiten bleiben auch auf kleinen Bildschirmen erhalten.
+
+## 1.1.7
+
+* Platziert die Stempeluhr rechts in der Nextcloud-Kopfleiste vor den Benachrichtigungen und dem Benutzermenü.
+* Unterstützt den aktuellen und den älteren rechten Kopfbereich sowie Nextcloud 35.
+* Hält die Schaltflächen auf schmalen Bildschirmen kompakt, damit die Kopfmenüs bedienbar bleiben.
+* Blendet die Schaltflächen bei fehlender Mitarbeiterzuordnung auch per CSS vollständig aus.
+
 ## 1.1.6
 
 * Erkennt Nextcloud, WEB-GUI und bestehende Android-App serverseitig.
